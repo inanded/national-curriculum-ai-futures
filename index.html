@@ -1,0 +1,941 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="How AI affects each subject in England's national curriculum: the skills taught, the risks, the opportunities, and whether those skills are needed, augmented or replaced at 10, 20 and 30 years.">
+<title>National Curriculum AI Futures</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: one reading column (max 1100px) under a sticky section nav; the subject matrix is the hub and opens a subject explorer below it. Tokens follow the AILitKit design system. */
+:root{
+  --surface:#F8F6F1; --raised:#FFFFFF; --line:#E3DED3; --line-strong:#CFC8B8;
+  --ink:#0B2A4A; --muted:#4A5B6E;
+  --teal:#079D8F; --purple:#6B46C1; --coral:#FF6B6B; --navy:#0B2A4A;
+  --action:#067A70; --on-action:#FFFFFF; --coral-strong:#C73E3E; --focus:#067A70;
+  --needed-bg:#DAF1EC; --aug-bg:#EAE3FA; --repl-bg:#FFE1DF; --open-bg:#ECE8DE;
+  --hero-bg:#0B2A4A; --hero-ink:#F8F6F1; --hero-muted:#B8C4D2; --hero-teal:#2CC4B4;
+  --font:Lexend,"Helvetica Neue",Arial,sans-serif;
+  --r-sm:6px; --r-md:12px; --r-lg:20px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --surface:#0B2A4A; --raised:#12365C; --line:#1E4166; --line-strong:#2C5480;
+    --ink:#F8F6F1; --muted:#B8C4D2;
+    --teal:#2CC4B4; --purple:#A085F0; --coral:#FF6B6B; --navy:#F8F6F1;
+    --action:#2CC4B4; --on-action:#0B2A4A; --coral-strong:#FF8A8A; --focus:#2CC4B4;
+    --needed-bg:#0E4B57; --aug-bg:#2F2D6E; --repl-bg:#55293F; --open-bg:#1A3B5F;
+    --hero-bg:#071E36; --hero-ink:#F8F6F1; --hero-muted:#B8C4D2; --hero-teal:#2CC4B4;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --surface:#0B2A4A; --raised:#12365C; --line:#1E4166; --line-strong:#2C5480;
+  --ink:#F8F6F1; --muted:#B8C4D2;
+  --teal:#2CC4B4; --purple:#A085F0; --coral:#FF6B6B; --navy:#F8F6F1;
+  --action:#2CC4B4; --on-action:#0B2A4A; --coral-strong:#FF8A8A; --focus:#2CC4B4;
+  --needed-bg:#0E4B57; --aug-bg:#2F2D6E; --repl-bg:#55293F; --open-bg:#1A3B5F;
+  --hero-bg:#071E36; --hero-ink:#F8F6F1; --hero-muted:#B8C4D2; --hero-teal:#2CC4B4;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--surface);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.65;margin:0}
+a{color:var(--action);text-underline-offset:2px}
+a:focus-visible,button:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:4px}
+h1,h2,h3,h4{text-wrap:balance;margin:0;line-height:1.2}
+p{margin:0}
+.wrap{max-width:1100px;margin:0 auto;padding-inline:20px}
+.label{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.small{font-size:14px;line-height:1.55;color:var(--muted)}
+.num{font-variant-numeric:tabular-nums}
+
+/* nav */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;gap:4px;overflow-x:auto;padding-block:8px;scrollbar-width:none}
+.nav .wrap::-webkit-scrollbar{display:none}
+.nav a{flex:none;font-size:14px;font-weight:500;color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:var(--r-sm);white-space:nowrap}
+.nav a:hover{color:var(--ink);background:var(--open-bg)}
+.nav a.on{color:var(--ink);background:var(--open-bg)}
+
+/* hero */
+.hero{background:var(--hero-bg);color:var(--hero-ink)}
+.hero .wrap{padding-block:56px 48px;display:grid;gap:32px}
+.hero .label{color:var(--hero-teal)}
+.hero h1{font-size:clamp(32px,5.4vw,52px);font-weight:800;letter-spacing:-.025em;max-width:18ch}
+.hero h1 em{font-style:normal;color:var(--hero-teal)}
+.hero .lede{font-size:19px;line-height:1.6;color:var(--hero-muted);max-width:62ch}
+.hero .lede strong{color:var(--hero-ink);font-weight:600}
+.figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;background:rgba(248,246,241,.14);border-radius:var(--r-md);overflow:hidden}
+.fig{background:var(--hero-bg);padding:20px 20px 18px;display:grid;gap:6px;align-content:start}
+.fig b{font-size:40px;font-weight:800;letter-spacing:-.02em;line-height:1;color:var(--hero-ink)}
+.fig b.t{color:var(--hero-teal)}
+.fig span{font-size:14px;line-height:1.5;color:var(--hero-muted)}
+.fig a{color:var(--hero-teal);font-size:13px}
+
+/* sections */
+section{padding-block:64px 8px;scroll-margin-top:56px}
+.sec-head{display:grid;gap:10px;margin-bottom:28px;max-width:70ch}
+.sec-head h2{font-size:clamp(26px,3.4vw,32px);font-weight:700;letter-spacing:-.01em}
+.sec-head p{color:var(--muted)}
+
+/* controls */
+.controls{display:flex;flex-wrap:wrap;gap:16px 28px;align-items:end;margin-bottom:18px}
+.ctl{display:grid;gap:6px}
+.seg{display:inline-flex;flex-wrap:wrap;gap:4px;background:var(--open-bg);padding:4px;border-radius:var(--r-md)}
+.seg button{font:inherit;font-size:14px;font-weight:500;color:var(--muted);background:none;border:0;border-radius:8px;padding:7px 12px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--raised);color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(11,42,74,.12)}
+
+/* legend + summary */
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:14px;color:var(--muted);margin-bottom:14px}
+.legend span{display:inline-flex;gap:8px;align-items:center}
+.sw{width:16px;height:16px;border-radius:4px;border:1px solid var(--line-strong);flex:none}
+.sw.N{background:var(--needed-bg)} .sw.A{background:var(--aug-bg)} .sw.P{background:var(--repl-bg)} .sw.O{background:var(--open-bg)}
+.sw.M{background:linear-gradient(135deg,var(--aug-bg) 50%,var(--repl-bg) 50%)}
+.summary{display:grid;gap:8px;margin-bottom:22px;max-width:760px}
+.sumbar{display:flex;height:34px;border-radius:var(--r-sm);overflow:hidden;border:1px solid var(--line-strong)}
+.sumbar div{display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--ink);transition:flex-basis .35s ease;min-width:0;overflow:hidden;white-space:nowrap}
+.sumbar .N{background:var(--needed-bg)} .sumbar .A{background:var(--aug-bg)} .sumbar .P{background:var(--repl-bg)} .sumbar .O{background:var(--open-bg)}
+.sumbar .M{background:linear-gradient(135deg,var(--aug-bg) 50%,var(--repl-bg) 50%)}
+
+/* matrix */
+.mx-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r-md);background:var(--raised)}
+table.mx{width:100%;border-collapse:collapse;min-width:640px}
+.mx th{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:left;padding:12px 12px;border-bottom:1px solid var(--line);background:var(--raised)}
+.mx th.h{text-align:center}
+.mx th.h.sel{color:var(--ink)}
+.mx td{padding:6px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
+.mx tr:last-child td{border-bottom:0}
+.mx tbody tr{cursor:pointer}
+.mx tbody tr:hover td.sub{background:var(--open-bg)}
+.mx tbody tr.cur td.sub{box-shadow:inset 3px 0 0 var(--teal)}
+.mx td.sub{padding:10px 12px;min-width:170px}
+.mx td.sub button{all:unset;cursor:pointer;display:grid;gap:2px}
+.mx td.sub b{font-size:16px;font-weight:600}
+.mx td.sub i{font-style:normal;font-size:12px;color:var(--muted)}
+.mx td.exp{font-size:14px;color:var(--muted);padding:10px 12px;max-width:220px;line-height:1.45}
+.cell{border-radius:8px;padding:8px 10px;display:grid;gap:3px;min-width:118px;transition:opacity .25s, transform .25s}
+.cell.N{background:var(--needed-bg)} .cell.A{background:var(--aug-bg)} .cell.P{background:var(--repl-bg)} .cell.O{background:var(--open-bg)}
+.cell.M{background:linear-gradient(135deg,var(--aug-bg) 50%,var(--repl-bg) 50%)}
+.cell b{font-size:14px;font-weight:600}
+.dots{display:inline-flex;gap:3px;align-items:center}
+.dots i{width:7px;height:7px;border-radius:50%;border:1.5px solid var(--ink);opacity:.75}
+.dots i.f{background:var(--ink)}
+.mx.focus td.hc .cell{opacity:.38}
+.mx.focus td.hc.sel .cell{opacity:1}
+.ext{font-size:12px;color:var(--muted)}
+
+/* explorer */
+.picker{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+.picker button{font:inherit;font-size:14px;font-weight:500;color:var(--ink);background:var(--raised);border:1px solid var(--line-strong);border-radius:var(--r-sm);padding:6px 12px;cursor:pointer}
+.picker button[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.picker .grp{flex-basis:100%;margin-top:6px}
+.picker .grp:first-child{margin-top:0}
+.sj{background:var(--raised);border:1px solid var(--line);border-radius:var(--r-lg);padding:28px;display:grid;gap:26px}
+.sj-top{display:grid;gap:10px}
+.sj-top h3{font-size:clamp(26px,3.6vw,34px);font-weight:800;letter-spacing:-.02em}
+.sj-top .hl{font-size:19px;color:var(--muted);max-width:60ch;line-height:1.5}
+.meta{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--open-bg);color:var(--ink);white-space:nowrap}
+.strands{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.strand{border-radius:var(--r-md);padding:14px 16px;display:grid;gap:4px}
+.strand.ex{background:var(--repl-bg)} .strand.rs{background:var(--needed-bg)}
+.strand b{font-size:16px;font-weight:600}
+.quad{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px 32px}
+.blk{display:grid;gap:10px;align-content:start;min-width:0}
+.blk h4{font-size:13px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;display:flex;align-items:center;gap:8px}
+.blk h4 .k{width:10px;height:10px;border-radius:3px}
+.k.know{background:var(--navy)} .k.risk{background:var(--coral)} .k.opp{background:var(--teal)} .k.job{background:var(--purple)}
+.blk ul{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+.blk li{font-size:15.5px;line-height:1.6;padding-left:14px;position:relative}
+.blk li::before{content:"";position:absolute;left:0;top:.72em;width:5px;height:5px;border-radius:50%;background:var(--line-strong)}
+.src{font-size:12.5px;white-space:nowrap}
+.tag{display:inline-block;font-size:10.5px;font-weight:600;letter-spacing:.06em;padding:1px 6px;border-radius:4px;margin-left:4px;vertical-align:1px;border:1px solid var(--line-strong);color:var(--muted)}
+.tag.EMP{border-color:var(--teal);color:var(--ink)}
+.tag.MODEL{border-color:var(--purple);color:var(--ink)}
+.tag.VENDOR,.tag.ADVOCACY{border-color:var(--coral-strong);color:var(--coral-strong)}
+.tag.SPEC{border-style:dashed}
+.tag.CHK{background:var(--repl-bg);border-color:transparent;color:var(--ink)}
+.horiz{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.hz{border-radius:var(--r-md);padding:16px;display:grid;gap:8px;align-content:start}
+.hz.N{background:var(--needed-bg)} .hz.A{background:var(--aug-bg)} .hz.P{background:var(--repl-bg)} .hz.O{background:var(--open-bg)}
+.hz.M{background:linear-gradient(135deg,var(--aug-bg) 50%,var(--repl-bg) 50%)}
+.hz .yr{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.hz .yr b{font-size:22px;font-weight:800}
+.hz .v{font-size:15px;font-weight:600}
+.hz p{font-size:14.5px;line-height:1.55}
+.sj-nav{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.btn{font:inherit;font-size:14px;font-weight:600;border-radius:var(--r-md);padding:9px 16px;cursor:pointer;border:1px solid var(--line-strong);background:var(--raised);color:var(--ink)}
+.btn:hover{border-color:var(--ink)}
+
+/* learning chart */
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:32px;align-items:start}
+.panel{background:var(--raised);border:1px solid var(--line);border-radius:var(--r-lg);padding:24px;display:grid;gap:18px;min-width:0}
+.chart{display:grid;gap:18px}
+.cg{display:grid;gap:8px}
+.cg h4{font-size:15px;font-weight:600}
+.br{display:grid;grid-template-columns:96px 1fr;gap:10px;align-items:center;font-size:13px;color:var(--muted)}
+.track{position:relative;height:26px}
+.track .zero{position:absolute;top:-4px;bottom:-4px;width:1.5px;background:var(--ink)}
+.bar{position:absolute;top:3px;height:20px;border-radius:4px;transition:width .6s ease,left .6s ease}
+.bar.pr{background:var(--teal)}
+.bar.ex{background:var(--purple)}
+.bar.neg{background:var(--coral)}
+.bv{position:absolute;top:3px;font-size:13px;font-weight:600;color:var(--ink);line-height:20px;white-space:nowrap}
+.axis{position:relative;height:18px;margin-left:106px;font-size:11px;color:var(--muted)}
+.axis span{position:absolute;transform:translateX(-50%)}
+.grid-l{position:absolute;top:0;bottom:0;width:1px;background:var(--line)}
+.ev{display:grid;gap:14px}
+.evi{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;align-items:baseline;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.evi:last-child{border-bottom:0;padding-bottom:0}
+.evi b{font-size:24px;font-weight:800;letter-spacing:-.01em;min-width:3.6ch}
+.evi b.neg{color:var(--coral-strong)} .evi b.pos{color:var(--action)}
+.evi p{font-size:15px;line-height:1.55}
+.callout{background:var(--open-bg);border-radius:var(--r-md);padding:16px 18px;font-size:15.5px;line-height:1.6}
+.callout strong{font-weight:600}
+
+/* jobs */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.stat{background:var(--raised);border:1px solid var(--line);border-radius:var(--r-md);padding:18px;display:grid;gap:6px;align-content:start}
+.stat b{font-size:30px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.stat b.neg{color:var(--coral-strong)} .stat b.pos{color:var(--action)}
+.stat p{font-size:14.5px;line-height:1.5}
+.expose{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:22px}
+.expose .col{border-radius:var(--r-md);padding:16px 18px;display:grid;gap:6px;align-content:start}
+.expose .hi{background:var(--repl-bg)} .expose .lo{background:var(--needed-bg)}
+.expose ul{margin:0;padding-left:18px;font-size:15px}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r-md);background:var(--raised)}
+table.t{width:100%;border-collapse:collapse;min-width:620px;font-size:14.5px}
+.t th{text-align:left;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:12px 14px;border-bottom:1px solid var(--line)}
+.t td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.5}
+.t tr:last-child td{border-bottom:0}
+.t td:first-child{font-weight:600}
+
+/* skills */
+.bets{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:28px}
+.bet{border-top:3px solid var(--teal);background:var(--raised);border-radius:0 0 var(--r-md) var(--r-md);padding:16px;display:grid;gap:6px;align-content:start}
+.bet b{font-size:16px;font-weight:600;line-height:1.35}
+.bet p{font-size:14px;color:var(--muted);line-height:1.5}
+.dir{display:inline-flex;align-items:center;gap:6px;font-weight:600}
+.dir i{font-style:normal;width:20px;height:20px;border-radius:50%;display:inline-grid;place-items:center;font-size:12px}
+.dir.up i{background:var(--needed-bg)} .dir.aug i{background:var(--aug-bg)} .dir.dn i{background:var(--repl-bg)} .dir.q i{background:var(--open-bg)}
+
+/* timeline */
+.tl{display:grid;gap:0;max-width:820px}
+.tli{display:grid;grid-template-columns:86px 22px 1fr;gap:0 14px}
+.tli .y{font-size:20px;font-weight:800;text-align:right;padding-top:2px;font-variant-numeric:tabular-nums}
+.tli .rail{position:relative;display:flex;justify-content:center}
+.tli .rail::before{content:"";position:absolute;top:0;bottom:0;width:2px;background:var(--line-strong)}
+.tli:first-child .rail::before{top:12px}
+.tli:last-child .rail::before{bottom:calc(100% - 12px)}
+.tli .dot{position:relative;margin-top:7px;width:14px;height:14px;border-radius:50%;border:3px solid var(--surface)}
+.dot.pol{background:var(--navy)} .dot.evd{background:var(--teal)} .dot.fc{background:var(--purple)} .dot.sc{background:var(--coral)}
+.tli .body{padding-bottom:22px;display:grid;gap:4px}
+.tli .body b{font-size:16px;font-weight:600;line-height:1.4}
+.tli .body p{font-size:14.5px;color:var(--muted);line-height:1.55}
+.tl-legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:14px;color:var(--muted);margin-bottom:20px}
+.tl-legend span{display:inline-flex;gap:8px;align-items:center}
+.tl-legend i{width:12px;height:12px;border-radius:50%}
+.tli.dim{opacity:.35}
+
+/* caveats */
+.cav{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}
+.cav ul{margin:0;padding-left:18px;display:grid;gap:8px;font-size:15px}
+.tags-legend{display:grid;gap:10px}
+.tags-legend div{display:grid;grid-template-columns:96px 1fr;gap:10px;align-items:baseline;font-size:15px}
+footer{padding-block:56px 64px;color:var(--muted);font-size:14px}
+footer .wrap{display:grid;gap:8px;border-top:1px solid var(--line);padding-top:24px}
+
+@media (max-width:640px){
+  body{font-size:16px}
+  .wrap{padding-inline:16px}
+  .sj{padding:20px 16px}
+  .panel{padding:18px 16px}
+  .hero .wrap{padding-block:40px 36px}
+  .fig b{font-size:34px}
+  .tli{grid-template-columns:58px 18px 1fr;gap:0 10px}
+  .tli .y{font-size:16px}
+  .mx th.exp,.mx td.exp{display:none}
+  table.mx{min-width:520px}
+  .br{grid-template-columns:72px 1fr}
+  .axis{margin-left:82px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+[hidden]{display:none!important}
+img{max-width:100%}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+</style>
+</head>
+<body>
+
+<nav class="nav" aria-label="Sections">
+  <div class="wrap" id="navlinks">
+    <a href="#overview">Overview</a>
+    <a href="#matrix">Subjects at a glance</a>
+    <a href="#explorer">Subject deep dive</a>
+    <a href="#learning">AI and learning</a>
+    <a href="#jobs">Jobs evidence</a>
+    <a href="#skills">Future skills</a>
+    <a href="#timeline">Timeline</a>
+    <a href="#evidence">How to read this</a>
+  </div>
+</nav>
+
+<header class="hero" id="overview">
+  <div class="wrap">
+    <div class="label">England's national curriculum · research to October 2026</div>
+    <h1>AI is <em>re-weighting</em> school subjects, not replacing them.</h1>
+    <p class="lede">Across all 14 statutory subjects, AI is taking over specific <strong>outputs</strong>: routine prose, everyday translation, junior coding, stock illustration and background music. The same evidence makes <strong>checking, judgement, physical practice and people skills</strong> more valuable. Subjects built on producing text, code or images face the most change. Subjects built on bodies and relationships face the least.</p>
+    <div class="figs">
+      <div class="fig"><b class="num">−17%</b><span>Unaided exam scores for students who had practised with unrestricted GPT-4. A tutor that gave hints instead of answers avoided the harm.</span><a href="https://www.pnas.org/doi/10.1073/pnas.2422633122">Bastani et al., PNAS 2025</a></div>
+      <div class="fig"><b class="num">−19%</b><span>Employment of US 22–25-year-olds in the most AI-exposed jobs, against trend. Fewer hires, not layoffs. Cause still debated.</span><a href="https://digitaleconomy.stanford.edu/publications/canaries-in-the-coal-mine/">Stanford Digital Economy Lab, Aug 2026</a></div>
+      <div class="fig"><b class="t num">2028</b><span>First teaching of England's revised curriculum, with AI literacy in computing and media literacy in citizenship and English.</span><a href="https://assets.publishing.service.gov.uk/media/690b2a4a14b040dfe82922ea/Government_response_to_the_Curriculum_and_Assessment_Review.pdf">Government response, Nov 2025</a></div>
+      <div class="fig"><b class="num">2047 / 2116</b><span>AI researchers' 50% dates for machines beating humans at every task, and for full automation of all jobs. A gap too wide to plan on.</span><a href="https://arxiv.org/abs/2401.02843">Grace et al., survey of 2,778 researchers</a></div>
+    </div>
+  </div>
+</header>
+
+<main>
+<section id="matrix" class="wrap">
+  <div class="sec-head">
+    <div class="label">Subjects at a glance</div>
+    <h2>Will each subject's skills be needed, augmented or replaced?</h2>
+    <p>Pick a horizon to see how the picture shifts. The 2036 column is anchored in evidence and official projections. The 2046 and 2056 columns are <strong>scenarios, not forecasts</strong>. Dots show confidence. Click any subject to open its deep dive.</p>
+  </div>
+  <div class="controls">
+    <div class="ctl"><span class="label" id="hz-l">Horizon</span>
+      <div class="seg" role="group" aria-labelledby="hz-l" id="hzseg">
+        <button type="button" data-h="all" aria-pressed="true">All three</button>
+        <button type="button" data-h="0" aria-pressed="false">~2036</button>
+        <button type="button" data-h="1" aria-pressed="false">~2046</button>
+        <button type="button" data-h="2" aria-pressed="false">~2056</button>
+      </div></div>
+    <div class="ctl"><span class="label" id="sort-l">Order</span>
+      <div class="seg" role="group" aria-labelledby="sort-l" id="sortseg">
+        <button type="button" data-s="curr" aria-pressed="true">Curriculum order</button>
+        <button type="button" data-s="exp" aria-pressed="false">Most AI pressure first</button>
+      </div></div>
+  </div>
+  <div class="legend" aria-label="Legend">
+    <span><i class="sw N"></i>Needed: people must still do it unaided</span>
+    <span><i class="sw A"></i>Augmented: done with AI, the valuable part shifts</span>
+    <span><i class="sw M"></i>Mixed: augmented, with part of the work replaced</span>
+    <span><i class="sw P"></i>Partly replaced: much of the paid task done by AI</span>
+    <span><i class="sw O"></i>Open: value shifts to personal or cultural</span>
+    <span><span class="dots"><i class="f"></i><i class="f"></i><i></i></span>Confidence</span>
+  </div>
+  <div class="summary" id="summary" hidden>
+    <div class="small" id="sumtext"></div>
+    <div class="sumbar" id="sumbar"></div>
+  </div>
+  <div class="mx-wrap">
+    <table class="mx" id="mx">
+      <thead><tr>
+        <th>Subject</th><th class="exp">Most exposed strand</th>
+        <th class="h" data-c="0">~2036<br><span class="ext">evidence-anchored</span></th>
+        <th class="h" data-c="1">~2046<br><span class="ext">scenario</span></th>
+        <th class="h" data-c="2">~2056<br><span class="ext">scenario</span></th>
+      </tr></thead>
+      <tbody id="mxbody"></tbody>
+    </table>
+  </div>
+  <p class="small" style="margin-top:12px">Verdicts come from the report's scenario table. "AI pressure" ordering is a summary of where each subject's core output sits, from text, code and images (most) to physical and relational (least). Scenarios assume AI capability between the 2047 and 2116 expert medians. A faster path pushes cognitive rows toward "partly replaced" by 2046; slow adoption leaves them "augmented".</p>
+</section>
+
+<section id="explorer" class="wrap">
+  <div class="sec-head">
+    <div class="label">Subject deep dive</div>
+    <h2>What pupils learn, what AI threatens, what it offers</h2>
+    <p>Every point links to its source. Tags show what kind of evidence it is, and a <span class="tag CHK">CHECK</span> tag marks figures that were not re-checked against the primary source.</p>
+  </div>
+  <div class="picker" id="picker"></div>
+  <article class="sj" id="sj" aria-live="polite"></article>
+</section>
+
+<section id="learning" class="wrap">
+  <div class="sec-head">
+    <div class="label">AI and learning</div>
+    <h2>How an AI tool is designed decides whether pupils gain or lose</h2>
+    <p>The strongest study so far gave about 1,000 Turkish secondary students access to GPT-4 for maths practice, then took it away for the exam.</p>
+  </div>
+  <div class="two">
+    <div class="panel">
+      <div class="seg" role="group" aria-label="Which tutor" id="tutseg">
+        <button type="button" data-t="both" aria-pressed="true">Compare both</button>
+        <button type="button" data-t="u" aria-pressed="false">Answer-giving</button>
+        <button type="button" data-t="g" aria-pressed="false">Hints only</button>
+      </div>
+      <div class="chart" id="chart" role="img" aria-label="Change versus control. Answer-giving GPT-4: practice +48%, unaided exam −17%. Hints-only tutor: practice +127%, unaided exam no significant difference."></div>
+      <div class="axis" id="axis"></div>
+      <p class="small">Change in score versus a control group with no AI. Source: <a href="https://www.pnas.org/doi/10.1073/pnas.2422633122">Bastani et al., PNAS 2025</a>. Field experiment, about 1,000 students.</p>
+      <div class="callout"><strong>The lesson for schools:</strong> "AI can do it" is a reason to keep teaching a skill and to assess it without AI. The guard-railed tutor avoided harm, but it did not beat the control group on the exam either.</div>
+    </div>
+    <div class="panel">
+      <div class="label">Other evidence, by strength</div>
+      <div class="ev">
+        <div class="evi"><b class="pos num">0.73–1.3 SD</b><p>Harvard physics: a carefully scaffolded GPT-4 tutor beat in-class active learning, in less time. Only 194 students and two topics; a re-analysis suggests a smaller gain. <a class="src" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12179260/">Kestin et al. 2025</a><span class="tag EMP">EMP</span></p></div>
+        <div class="evi"><b class="pos num">+0.23 SD</b><p>Nigeria: six weeks of teacher-led GPT-4 sessions improved English. Working paper; control group had no extra lesson time. <a class="src" href="https://openknowledge.worldbank.org/entities/publication/15e1ff08-15ae-4f7a-b2a8-d146e6c113ee">World Bank</a><span class="tag EMP">EMP</span></p></div>
+        <div class="evi"><b class="pos num">−31%</b><p>England: ChatGPT with a guide cut KS3 science lesson-planning time with no drop in quality. 259 teachers. Measures workload, not pupil learning. <a class="src" href="https://educationendowmentfoundation.org.uk/news/teachers-using-chatgpt-alongside-a-guide-to-support-them-to-use-it-effectively-can-cut-lesson-planning-time-by-over-30-per-cent">EEF</a><span class="tag EMP">EMP</span></p></div>
+        <div class="evi"><b class="num">weak</b><p>"Cognitive offloading": surveys link heavy AI use to less critical thinking, and the MIT EEG preprint (54 people) found weaker engagement. Correlational or unreviewed. <a class="src" href="https://www.mdpi.com/2075-4698/15/1/6">Gerlich</a> · <a class="src" href="https://arxiv.org/abs/2506.08872">MIT preprint</a></p></div>
+      </div>
+    </div>
+  </div>
+  <div class="stats" style="margin-top:24px">
+    <div class="stat"><b class="num">56%</b><p>of UK 8–17-year-olds have used AI. Of those who read AI search summaries, 46% think they are always accurate. <a class="src" href="https://www.ofcom.org.uk/siteassets/resources/documents/research-and-data/media-literacy-research/children/2026-children-and-parents-report/children-and-parents-media-use-and-attitudes-report-2025-6.pdf?v=418231">Ofcom 2026</a></p></div>
+    <div class="stat"><b class="num">100</b><p>AI malpractice cases detected at GCSE and A level in 2025: only 2% of all malpractice. Treat it as a floor. Ofqual has demanded stricter coursework checks. <a class="src" href="https://www.gov.uk/government/statistics/malpractice-in-gcse-as-and-a-level-summer-2025-exam-series/malpractice-in-gcse-as-and-a-level-summer-2025-exam-series">Ofqual</a></p></div>
+    <div class="stat"><b class="num">450,000</b><p>disadvantaged pupils targeted by DfE AI tutoring tools, due by end of 2027. No English pupil-facing AI trial has reported results yet. <a class="src" href="https://www.gov.uk/government/news/450000-disadvantaged-pupils-could-benefit-from-ai-tutoring-tools">GOV.UK</a></p></div>
+  </div>
+</section>
+
+<section id="jobs" class="wrap">
+  <div class="sec-head">
+    <div class="label">Jobs evidence</div>
+    <h2>Exposure is broad. Actual job loss so far is narrow, and it falls on junior roles.</h2>
+    <p>Exposure studies estimate what AI <em>could</em> touch. They are not job-loss forecasts. The DfE's own study says it "does not distinguish whether a job will be augmented or replaced".</p>
+  </div>
+  <div class="label" style="margin-bottom:12px">What has actually been measured</div>
+  <div class="stats">
+    <div class="stat"><b class="neg num">−19%</b><p>US 22–25-year-olds in the most exposed jobs, against trend. Descriptive, not causal. <a class="src" href="https://digitaleconomy.stanford.edu/publications/canaries-in-the-coal-mine/">Stanford</a><span class="tag EMP">EMP</span></p></div>
+    <div class="stat"><b class="neg num">−5.8%</b><p>Junior roles at highly AI-exposed UK firms. Customer-facing roles rose slightly. <a class="src" href="https://www.kcl.ac.uk/news/new-study-reveals-early-impact-of-ai-on-job-market-in-uk">King's College London</a><span class="tag EMP">EMP</span></p></div>
+    <div class="stat"><b class="num">+6.7% / −2.5%</b><p>Senior vs junior hiring at AI-adopting firms in 41 countries. AI changes the mix more than the total. Not yet peer-reviewed. <a class="src" href="https://phys.org/news/2026-10-ai-linked-employment-globally.html">Phys.org</a></p></div>
+    <div class="stat"><b class="neg num">~28,000</b><p>fewer US translator jobs created 2010–23 as machine translation spread. The clearest causal displacement evidence of any subject. <a class="src" href="https://www.oxfordmartin.ox.ac.uk/publications/lost-in-translation-artificial-intelligence-and-the-demand-for-foreign-language-skills">Frey & Llanos-Paredes</a><span class="tag EMP">EMP</span></p></div>
+    <div class="stat"><b class="neg num">−9.4%</b><p>Earnings of image freelancers on Upwork after AI image tools (writing: −5.2%). <a class="src" href="https://www.cesifo.org/DocDL/cesifo1_wp10601.pdf">Hui, Reshef & Zhou</a><span class="tag EMP">EMP</span></p></div>
+    <div class="stat"><b class="num">−19%</b><p>Speed of experienced developers on their own code when using AI, though they believed it helped. <a class="src" href="https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/">METR 2025</a><span class="tag EMP">EMP</span></p></div>
+  </div>
+  <div class="expose">
+    <div class="col hi"><div class="label">Most exposed (UK, DfE 2023)</div><ul><li>Management consultants, accountants, psychologists</li><li>Teaching</li><li>Jobs reached through maths and economics degrees</li><li>London and the South East</li></ul></div>
+    <div class="col lo"><div class="label">Least exposed (UK, DfE 2023)</div><ul><li>Sports players (the least exposed of all)</li><li>Roofers, steel erectors and other trades</li><li>Hands-on care and science roles: vets, radiographers, physios</li></ul></div>
+  </div>
+  <p class="small" style="margin-top:10px">Source: <a href="https://assets.publishing.service.gov.uk/media/656856b8cc1ec500138eef49/Gov.UK_Impact_of_AI_on_UK_Jobs_and_Training.pdf">DfE, The impact of AI on UK jobs and training (2023)</a>. Generative AI reverses the old automation pattern: the more educated and better paid are more exposed.</p>
+  <div class="callout" style="margin-top:22px"><strong>Why junior roles matter for schools.</strong> Trials show AI lifts novices the most (customer support +34% for novices), which is exactly why firms may need fewer of them. Yet when AI fails, people with domain knowledge are the ones who notice. Consultants using AI on a task beyond its ability were 19 points less likely to be right. <a class="src" href="https://www.hbs.edu/faculty/Pages/item.aspx?num=64700">HBS/BCG</a><span class="tag CHK">CHECK</span></div>
+  <div class="tbl-wrap" style="margin-top:22px">
+    <table class="t">
+      <thead><tr><th>Headline estimate</th><th>What it measures</th><th>Read it as</th></tr></thead>
+      <tbody>
+        <tr><td>IPPR: 11% of UK tasks</td><td>Tasks exposed to current AI; 59% in a "second wave"</td><td>Scenarios from 7.9m UK jobs lost to none, depending on policy. <a class="src" href="https://www.ippr.org/media-office/up-to-8-million-uk-jobs-at-risk-from-ai-unless-government-acts-finds-ippr">IPPR</a><span class="tag MODEL">MODEL</span></td></tr>
+        <tr><td>NFER: 1–3m UK jobs by 2035</td><td>Declining admin, secretarial, customer-service and machine roles</td><td>Total employment still grows, in roles using six essential skills. <a class="src" href="https://www.nfer.ac.uk/press-releases/up-to-three-million-uk-jobs-at-risk-over-the-next-decade-says-report/">NFER</a><span class="tag MODEL">MODEL</span></td></tr>
+        <tr><td>McKinsey: 57% of US work hours</td><td>Technical potential of today's technology</td><td>"Not a forecast of job losses." <a class="src" href="https://www.mckinsey.com/mgi/our-research/agents-robots-and-us-skill-partnerships-in-the-age-of-ai">MGI 2025</a><span class="tag VENDOR">VENDOR</span></td></tr>
+        <tr><td>Acemoglu: ~4.6% of US tasks</td><td>Tasks profitably automatable within ten years</td><td>The sceptical end. <a class="src" href="https://www.nber.org/papers/w32487">NBER</a><span class="tag CHK">CHECK</span></td></tr>
+        <tr><td>Frey & Osborne 2013: 47%</td><td>US jobs at "high risk"</td><td>Never materialised as job loss; a task-based re-analysis cut it to 9%. <a class="src" href="https://doi.org/10.1787/5jlz9h56dvq7-en">OECD 2016</a><span class="tag CHK">CHECK</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="skills" class="wrap">
+  <div class="sec-head">
+    <div class="label">Future skills</div>
+    <h2>The safest bets hold up in every scenario</h2>
+    <p>No credible forecast covers specific school skills beyond 2035. So the sound approach is to invest in skills that stay valuable whichever future arrives.</p>
+  </div>
+  <div class="bets">
+    <div class="bet"><b>Literacy and numeracy used to check AI</b><p>The foundation for spotting AI errors. 21% of adults in England are at or below Level 1 numeracy.</p></div>
+    <div class="bet"><b>Evaluating evidence and sources</b><p>Lateral reading improved pupils' credibility judgements in six lessons. Analytical thinking is the WEF's top skill.</p></div>
+    <div class="bet"><b>Interpersonal and civic skills</b><p>The strongest long-run evidence of rising value (Deming 2017). Customer-facing roles held up in UK data.</p></div>
+    <div class="bet"><b>Physical competence</b><p>Least exposed to generative AI in every study. Robotics is the open question at 20–30 years.</p></div>
+    <div class="bet"><b>Using AI without dependence</b><p>The CAR wants pupils to use AI "without becoming dependent on it". DfE now asks tools to monitor cognitive offloading.</p></div>
+  </div>
+  <div class="tbl-wrap">
+    <table class="t">
+      <thead><tr><th>Skill family</th><th>Evidence now</th><th>Next 10 years</th><th>20–30 years (speculative)</th><th>Evidence base</th></tr></thead>
+      <tbody id="skillbody"></tbody>
+    </table>
+  </div>
+  <p class="small" style="margin-top:12px">Sources: <a href="https://www.weforum.org/publications/the-future-of-jobs-report-2025/in-full/3-skills-outlook/">WEF Future of Jobs 2025</a> (employer survey: reading, writing and maths are among the most stable skills, not obsolete) · <a href="https://www.nfer.ac.uk/press-releases/up-to-three-million-uk-jobs-at-risk-over-the-next-decade-says-report/">NFER Skills Imperative 2035</a> (essential skills almost unchanged since 2010) · <a href="https://scholar.harvard.edu/sites/scholar.harvard.edu/files/ddeming/files/deming_socialskills_qje.pdf">Deming, QJE 2017</a> · <a href="https://www.kcl.ac.uk/news/new-study-reveals-early-impact-of-ai-on-job-market-in-uk">KCL</a> · <a href="https://assets.publishing.service.gov.uk/media/656856b8cc1ec500138eef49/Gov.UK_Impact_of_AI_on_UK_Jobs_and_Training.pdf">DfE 2023</a>.</p>
+  <div class="callout" style="margin-top:18px"><strong>Creativity is the contested one.</strong> Employers rank creative thinking as fast-growing, but AI improves ideation in trials, and on one art platform AI raised output 25% while average novelty fell. "Creative thinking with and about AI output" is a defensible goal. "Creativity is AI-proof" is not.</div>
+</section>
+
+<section id="timeline" class="wrap">
+  <div class="sec-head">
+    <div class="label">Timeline</div>
+    <h2>A child starting Reception in 2026 sits GCSEs around 2037 and reaches mid-career around 2056</h2>
+    <p>Hard evidence covers about 2022 to 2026. Official projections reach about ten years. Everything later is a scenario.</p>
+  </div>
+  <div class="controls">
+    <div class="seg" role="group" aria-label="Filter timeline" id="tlseg">
+      <button type="button" data-k="all" aria-pressed="true">Everything</button>
+      <button type="button" data-k="pol" aria-pressed="false">Policy</button>
+      <button type="button" data-k="fc" aria-pressed="false">Forecasts</button>
+      <button type="button" data-k="sc" aria-pressed="false">Scenarios</button>
+    </div>
+  </div>
+  <div class="tl-legend"><span><i style="background:var(--navy)"></i>Policy</span><span><i style="background:var(--teal)"></i>Evidence</span><span><i style="background:var(--purple)"></i>Forecast or projection</span><span><i style="background:var(--coral)"></i>Scenario</span></div>
+  <div class="tl" id="tl"></div>
+</section>
+
+<section id="evidence" class="wrap">
+  <div class="sec-head">
+    <div class="label">How to read this</div>
+    <h2>Evidence tags, and what to check before quoting</h2>
+  </div>
+  <div class="cav">
+    <div class="tags-legend">
+      <div><span><span class="tag EMP">EMP</span></span><span>Measured real outcomes: trials, payroll or job-posting data, official statistics</span></div>
+      <div><span><span class="tag MODEL">MODEL</span></span><span>Estimate of exposure or potential, or a projection. Never a measured job loss</span></div>
+      <div><span><span class="tag">SURVEY</span></span><span>Opinions of employers, workers or experts</span></div>
+      <div><span><span class="tag SPEC">SPEC</span></span><span>Scenario or informed speculation</span></div>
+      <div><span><span class="tag VENDOR">VENDOR</span></span><span>Produced or funded by a firm selling AI or consulting</span></div>
+      <div><span><span class="tag ADVOCACY">ADVOCACY</span></span><span>From a body with an interest in the subject</span></div>
+      <div><span><span class="tag CHK">CHECK</span></span><span>Not re-checked against the primary source during research</span></div>
+    </div>
+    <div>
+      <div class="label" style="margin-bottom:10px">Verify before relying on</div>
+      <ul>
+        <li>UK graduate vacancies down 45.6% (Adzuna via a secondary source)</li>
+        <li>2026 FrontierMath and SWE-bench scores from unofficial aggregators</li>
+        <li>Deezer's share of AI-generated uploads (company-reported)</li>
+        <li>The 32% illustrators figure (secondary source, sample unknown)</li>
+        <li>AllFaith religious-bias results (press coverage, partly preprint)</li>
+        <li>Exact wording of DfE's "cognitive offloading" standard</li>
+        <li>OECD Digital Education Outlook 2026 (secondary summaries only)</li>
+        <li>Some programme-of-study wording (English, history, geography) not re-fetched</li>
+        <li>Whether the revised RSHE guidance names companion chatbots</li>
+      </ul>
+    </div>
+    <div>
+      <div class="label" style="margin-bottom:10px">Gaps in the evidence</div>
+      <ul>
+        <li>No UK school trial of AI used directly by pupils has reported yet</li>
+        <li>No study tracks skills over more than about two years of AI use</li>
+        <li>No forecast covers any school subject's skills at 20 or 30 years</li>
+        <li>No UK payroll-data equivalent of the Stanford analysis</li>
+      </ul>
+      <p class="small" style="margin-top:14px">Scope: the national curriculum applies to England. Scotland (Curriculum for Excellence), Wales (Curriculum for Wales) and Northern Ireland have their own curricula and mostly treat AI as a cross-curricular safeguarding and digital-competence issue.</p>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Built from a research report synthesising government documents, peer-reviewed studies, working papers and official statistics available to October 2026. Every figure links to its source.</p>
+    <p>Nothing here beyond about 2036 is a forecast. <a href="https://github.com/inanded/national-curriculum-ai-futures/blob/main/report.md">Read the full written report</a>.</p>
+  </div>
+</footer>
+
+<script>
+const S={
+ bastani:["Bastani et al., PNAS 2025","https://www.pnas.org/doi/10.1073/pnas.2422633122"],
+ gov:["Government response 2025","https://assets.publishing.service.gov.uk/media/690b2a4a14b040dfe82922ea/Government_response_to_the_Curriculum_and_Assessment_Review.pdf"],
+ car:["CAR final report","https://data.parliament.uk/DepositedPapers/Files/DEP2025-0723/Curriculum_and_Assessment_Review_final_report.pdf"],
+ car2:["CAR final report","https://assets.publishing.service.gov.uk/media/690b96bbc22e4ed8b051854d/Curriculum_and_Assessment_Review_final_report_-_Building_a_world-class_curriculum_for_all.pdf"],
+ dfe23:["DfE 2023","https://assets.publishing.service.gov.uk/media/656856b8cc1ec500138eef49/Gov.UK_Impact_of_AI_on_UK_Jobs_and_Training.pdf"],
+ nigeria:["World Bank","https://openknowledge.worldbank.org/entities/publication/15e1ff08-15ae-4f7a-b2a8-d146e6c113ee"],
+ kestin:["Kestin et al. 2025","https://pmc.ncbi.nlm.nih.gov/articles/PMC12179260/"],
+ eef:["EEF","https://educationendowmentfoundation.org.uk/news/teachers-using-chatgpt-alongside-a-guide-to-support-them-to-use-it-effectively-can-cut-lesson-planning-time-by-over-30-per-cent"],
+ hui:["Hui, Reshef & Zhou","https://www.cesifo.org/DocDL/cesifo1_wp10601.pdf"],
+ stanford:["Stanford DEL","https://digitaleconomy.stanford.edu/publications/canaries-in-the-coal-mine/"],
+ grace:["Grace et al.","https://arxiv.org/abs/2401.02843"]
+};
+const L=(t,u)=>[t,u];
+/* verdict codes: N needed, A augmented, M mixed (augmented + part replaced), P partly replaced, O open */
+const VN={N:"Needed",A:"Augmented",M:"Mixed",P:"Partly replaced",O:"Open"};
+const CONF={"High":3,"Moderate–high":3,"Moderate":2,"Low–moderate":2,"Low":1,"Very low":0};
+const SUBJ=[
+{id:"english",name:"English",grp:"Core",ks:"KS1–4",press:4,
+ hl:"Composition is the most exposed strand. Critical reading and oracy gain value.",
+ ex:"Routine composition and summary",rs:"Critical reading, oracy, judgement",
+ know:[
+  {t:"Four strands: spoken language, reading, writing, and grammar and vocabulary.",s:[L("DfE English PoS","https://www.gov.uk/government/publications/national-curriculum-in-england-english-programmes-of-study")],c:1},
+  {t:"GCSE English Language is 100% exam, half reading and half writing. Reading includes \"identifying bias and misuse of evidence\". Spoken language is reported separately and carries no weight.",s:[L("GCSE subject content","https://assets.publishing.service.gov.uk/media/5a7bfd7640f0b63f7572aa8b/GCSE_English_language.pdf")]},
+  {t:"Reforms add a statutory Year 8 reading test, new oracy frameworks, and a GCSE recast around multimodal and online texts.",s:[S.gov,S.car]}],
+ risk:[
+  {t:"Writing about content is a proven learning tool (effect size 0.30 across 56 experiments). Letting AI draft removes that practice.",s:[L("Graham et al. 2020","https://acuresearchbank.acu.edu.au/item/8x2w0/the-effects-of-writing-on-learning-in-science-social-studies-and-mathematics-a-meta-analysis")],g:"EMP"},
+  {t:"Reading enjoyment is at a 20-year low: 32.7% of 8–18s enjoy reading in their free time. The decline predates ChatGPT; AI compounds it.",s:[L("National Literacy Trust 2025","https://literacytrust.org.uk/research-services/research-reports/children-and-young-peoples-reading-in-2025")],g:"EMP"},
+  {t:"60.9% of 13–18s who use generative AI monthly use it for homework.",s:[L("NLT AI report","https://literacytrust.org.uk/research-services/research-reports/young-people-and-teachers-use-of-generative-ai-to-support-literacy-in-2025/")],g:"SURVEY"}],
+ opp:[
+  {t:"Nigeria RCT: six weeks of teacher-led GPT-4 sessions raised English scores by 0.23 SD. A low-baseline setting, so it may not transfer to England.",s:[S.nigeria],g:"EMP"},
+  {t:"Feedback on drafts at scale, and text-to-speech for dyslexic and EAL learners, are plausible uses. No English trial evidence yet."}],
+ job:[
+  {t:"Freelance writers on Upwork lost 2% of jobs and 5.2% of earnings after ChatGPT.",s:[S.hui],g:"EMP"},
+  {t:"Posts for automation-prone writing and coding work fell 21% relative to manual jobs. The posts that remained were more complex and better paid.",s:[L("Demirci et al. 2025","https://www.diw.de/de/diw_01.c.906828.de/publikationen/externe_referierte_aufsaetze/2025_0010/who_is_ai_replacing__the_impact_of_generative_ai_on_online_freelancing_platforms.html")],g:"EMP"},
+  {t:"Adult literacy in England scores 272 against an OECD average of 260. This baseline predates generative AI.",s:[L("NFER on PIAAC","https://nfer.ac.uk/media/r0kpehmv/key_insights_from_the_survey_of_adult_skills_piaac_in_england.pdf")]}],
+ out:[["A","Commodity writing jobs shrink. Reading, critical evaluation and oracy are strengthened in policy. Foundations still needed.","Moderate"],
+      ["A","Routine text production largely automated. Value moves to judging, editing and verifying.","Low"],
+      ["N","Writing as a way of thinking, plus civic and media literacy and verification.","Very low"]]},
+{id:"maths",name:"Maths",grp:"Core",ks:"KS1–4",press:3,
+ hl:"Answers have become cheap. Number sense is how people check them.",
+ ex:"Procedural calculation, routine problems",rs:"Number sense, estimation, statistics, modelling",
+ know:[
+  {t:"Aims: fluency, reasoning and problem-solving. Calculators \"should not be used as a substitute for good written and mental arithmetic\".",s:[L("DfE Maths PoS","https://www.gov.uk/government/publications/national-curriculum-in-england-mathematics-programmes-of-study/national-curriculum-in-england-mathematics-programmes-of-study")]},
+  {t:"Reforms re-sequence content: number fluency at KS1, multiplicative reasoning at KS2, proportional and algebraic reasoning at KS3.",s:[S.car]},
+  {t:"31% of pupils miss grade 4 at 16, rising to 54% of pupils on free school meals. The review puts AI in computing, not maths.",s:[S.car]}],
+ risk:[
+  {t:"Students who practised with unrestricted GPT-4 scored 17% lower on an unaided exam. This lands hardest on pupils without secure foundations, who are least able to spot AI errors.",s:[S.bastani],g:"EMP"},
+  {t:"Unlike calculators, which offload one step and were broadly harmless when integrated into teaching, LLMs can complete the whole reasoning chain and still be wrong.",s:[L("Hembree summary","https://trace.tennessee.edu/entities/publication/5f2f6fe3-1677-443e-b5f8-fab75cd70fce")]},
+  {t:"Free AI can now solve any GCSE or A-level question. Google's Gemini Deep Think reached IMO gold (35/42) in 2025.",s:[L("TechRepublic","https://www.techrepublic.com/article/news-google-deepmind-math-olympiad/")],g:"VENDOR"}],
+ opp:[
+  {t:"Tutors that withhold answers avoided the harm in the Bastani study and fit \"fluency through varied and frequent practice\".",s:[S.bastani],g:"EMP"},
+  {t:"Terence Tao estimates only about 1–2% of open research problems are currently AI-tractable, and favours human–AI collaboration.",s:[L("Daily Maverick","https://dailymaverick.co.za/article/2026-05-03-crossed-wires-what-does-the-worlds-greatest-living-mathematician-think-of-ai")]},
+  {t:"The idea that AI reduces maths anxiety is untested."}],
+ job:[
+  {t:"Maths and economics degrees lead to the most AI-exposed jobs in the UK.",s:[S.dfe23],g:"MODEL"},
+  {t:"US projections for 2024–34 still show data scientists growing 34% and actuaries 22%, consistent with augmentation.",s:[L("BLS","https://www.bls.gov/opub/ted/2026/it-adds-up-job-outlook-for-math-occupations.htm")],g:"MODEL"},
+  {t:"About 21% of adults in England are at or below Level 1 numeracy: the group least able to check AI's numbers.",s:[L("GOV.UK PIAAC","https://www.gov.uk/government/publications/survey-of-adult-skills-2023-national-report-for-england")],g:"EMP"}],
+ out:[["N","Number fluency, estimation, proportional reasoning and statistics stay essential. Routine calculation at work is largely done by AI; modelling is augmented.","Moderate"],
+      ["A","Modelling and data interpretation done with AI.","Low"],
+      ["N","Civic numeracy for money, risk and health statistics: the most robust reason to teach maths.","Very low"]]},
+{id:"science",name:"Science",grp:"Core",ks:"KS1–4",press:2,
+ hl:"AI predicts. Humans still validate.",
+ ex:"Fact recall, literature search, data analysis",rs:"Practical work, evaluating evidence",
+ know:[
+  {t:"Biology, chemistry and physics, with \"working scientifically\" (questioning, fair testing, measuring, analysing, evaluating) at every key stage.",s:[L("DfE Science PoS","https://www.gov.uk/government/publications/national-curriculum-in-england-science-programmes-of-study/national-curriculum-in-england-science-programmes-of-study")]},
+  {t:"GCSE requires 21 practicals in Combined Science and 28 in the separate sciences, assessed through written exams.",s:[L("AQA","https://www.aqa.org.uk/subjects/science/gcse/combined-science-trilogy-8464/specification/practical-assessment")]},
+  {t:"Reforms: less content, clear purposes for practicals, more climate science, and pupils who can \"evaluate scientific claims critically\".",s:[S.car]}],
+ risk:[
+  {t:"GCSE pupils doing hands-on practicals at least fortnightly fell from 44% (2016) to 26% (2023), with videos replacing them. Virtual labs could speed this up.",s:[L("Royal Society 2023","https://royalsociety.org/news/2024/04/science-education-tracker-2023/")],g:"EMP"},
+  {t:"In 2023, 18% of GPT-4's citations were fabricated.",s:[L("Walters & Wilder","https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10484980/")],g:"EMP"},
+  {t:"Chatbots given malicious instructions produced health disinformation in 88 of 100 responses.",s:[L("ASCO Post","https://ascopost.com/news/june-2025/study-finds-ai-chatbots-are-vulnerable-to-spreading-malicious-false-health-information/")],g:"EMP"},
+  {t:"Claims of AI \"discovery\" (GNoME materials, the Berkeley A-Lab, Sakana's AI Scientist) were each challenged by experts within months.",s:[L("Chemistry World","https://chemistryworld.com/news/new-analysis-raises-doubts-over-autonomous-labs-materials-discoveries/4018791.article")]}],
+ opp:[
+  {t:"AlphaFold won the 2024 Nobel Prize in Chemistry: AI's clearest success is prediction from well-curated data.",s:[L("Nobel Prize","https://www.nobelprize.org/prizes/chemistry/2024/press-release/")]},
+  {t:"A scaffolded AI physics tutor produced 0.73–1.3 SD larger gains than active learning, in less time (194 students).",s:[S.kestin],g:"EMP"},
+  {t:"ChatGPT with a guide cut KS3 science lesson planning time by 31%, with no drop in quality.",s:[S.eef],g:"EMP"}],
+ job:[
+  {t:"UK engineering occupations are forecast to grow 1.6 times faster than non-priority sectors to 2030.",s:[L("RAEng","https://raeng.org.uk/news/engineers-2030-final-report-launched/")],g:"MODEL"},
+  {t:"Hands-on science roles such as vets, radiographers and physiotherapists are among the least exposed.",s:[S.dfe23],g:"MODEL"}],
+ out:[["A","Conceptual knowledge needed to direct and check AI. Data analysis augmented; fact recall and literature search partly replaced. Practical skill and evidence evaluation gain value.","Moderate"],
+      ["A","Self-driving labs could take over routine screening.","Low"],
+      ["N","Scientific literacy for citizens becomes the main reason for compulsory science.","Very low"]]},
+{id:"computing",name:"Computing",grp:"Foundation",ks:"KS1–4",press:5,
+ hl:"Routine code is automated. Specification and verification remain.",
+ ex:"Writing routine code",rs:"Specifying, testing, AI and data literacy",
+ know:[
+  {t:"The 2014 programme of study combines computer science, IT and digital literacy. Two programming languages at KS3, one textual. It never mentions AI.",s:[L("DfE Computing PoS","https://www.gov.uk/government/publications/national-curriculum-in-england-computing-programmes-of-study/national-curriculum-in-england-computing-programmes-of-study")]},
+  {t:"GCSE Computer Science entries fell from about 92,800 (2024) to 82,428 (2026). Girls are 23% of entrants, against 43% for the old ICT GCSE.",s:[L("NCCE","https://teachcomputing.org/blog/gcse-results-2026"),L("Schools Week","https://schoolsweek.co.uk/computing-revolution-led-to-stark-drop-in-girls-taking-subject")],g:"ADVOCACY"},
+  {t:"Reforms: AI literacy, data and \"bias in technology\"; a broader Computing GCSE; a possible level 3 data science and AI qualification.",s:[S.gov]}],
+ risk:[
+  {t:"Weaker novice programmers using AI reached solutions they could not produce alone: an \"illusion of progress\" (21 students).",s:[L("Prather et al. 2024","https://arxiv.org/abs/2405.17739v1")],g:"EMP"},
+  {t:"Linking falling entries to AI is speculation: entries fell in 18 of 31 GCSE subjects in 2025.",g:"SPEC"}],
+ opp:[
+  {t:"International AI literacy frameworks now exist: UNESCO (2024) and EC–OECD AILit (June 2026), which feeds a PISA 2029 Media & AI Literacy test.",s:[L("AILit","https://ailiteracyframework.org/")]},
+  {t:"The Raspberry Pi Foundation argues children still need to code so humans can \"control these systems\".",s:[L("RPF 2025","https://static.raspberrypi.org/files/about/Why-kids-still-need-to-learn-to-code-in-the-age-of-AI-2025-Raspberry-Pi-Foundation-position-paper.pdf")],g:"ADVOCACY"}],
+ job:[
+  {t:"AI coding benchmarks went from 4.4% (2023) to 71.7% (2024) on SWE-bench.",s:[L("Stanford DEL","https://digitaleconomy.stanford.edu/publication/canaries-in-the-coal-mine-six-facts-about-the-recen")]},
+  {t:"Experienced developers were 19% slower with AI on their own code, though they believed it helped. A vendor lab study found 55.8% faster on a simple task.",s:[L("METR","https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/"),L("Peng et al.","https://arxiv.org/abs/2302.06590")],g:"EMP"},
+  {t:"UK tech graduate hiring fell about 46% in 2025. A techUK panel argued National Insurance rises explain at least as much as AI.",s:[L("The Register","https://www.theregister.com/2025/10/16/uk_tech_grad_jobs/"),L("techUK","https://www.techuk.org/resource/event-round-up-entry-level-and-graduate-jobs-in-the-era-of-ai.html")]}],
+ out:[["M","Augmented, with routine and junior coding partly replaced. Skills move from syntax to specifying, reading, testing, security and data literacy.","Moderate"],
+      ["P","If the 2047 expert median holds, professional programming could be largely automated: partly replaced as a job, still needed as a literacy.","Low"],
+      ["N","Civic understanding of what systems can and cannot do.","Very low"]]},
+{id:"dt",name:"Design & technology",grp:"Foundation",ks:"KS1–3, KS4 option",press:2,
+ hl:"AI enters the design phase. Making and cooking remain human work.",
+ ex:"Concept visualisation, design write-ups",rs:"Making, electronics, food",
+ know:[
+  {t:"Design, make, evaluate and technical knowledge, plus cooking and nutrition. CAD/CAM and microcontrollers at KS3.",s:[L("DfE D&T PoS","https://www.gov.uk/government/publications/national-curriculum-in-england-design-and-technology-programmes-of-study/national-curriculum-in-england-design-and-technology-programmes-of-study")]},
+  {t:"GCSE entries are down more than 80% from the 2001 peak, at 84,320 in 2026. Still a teacher-shortage subject.",s:[L("LJMU","https://opendata.ljmu.ac.uk/id/eprint/278/"),L("D&T Association","https://www.designtechnology.org.uk/news/gcse-results-day-2026/"),L("NFER 2026","https://www.nfer.ac.uk/publications/school-teacher-labour-market-in-england-annual-report-2026/")]},
+  {t:"The review accepted D&T's \"poor health\" but did not mandate provision. Food becomes \"Food and Nutrition\" with hygiene and sustainability added.",s:[L("BNF","https://foodafactoflife.org.uk/news/curriculum-and-assessment-review-final-report/")]}],
+ risk:[
+  {t:"Using an AI image generator while ideating increased design fixation and produced fewer, less varied and less original ideas (60 participants).",s:[L("CHI 2024","https://arxiv.org/abs/2403.11164")],g:"EMP"},
+  {t:"Text-heavy coursework folders are exposed to undisclosed AI writing. Exam boards treat undeclared AI use as malpractice."}],
+ opp:[
+  {t:"Small course studies report faster sketch-to-CAD cycles and more design iterations.",s:[L("arXiv 2510.19342","https://arxiv.org/pdf/2510.19342")]},
+  {t:"Rapid visualisation could help pupils who struggle to draw."}],
+ job:[
+  {t:"CITB projects a need for 41,200 extra construction workers a year to 2030 (one source gives a different figure).",s:[L("ACE/CITB","https://www.acenet.co.uk/news/infrastructure-intelligence/construction-must-find-206-000-extra-workers-by-2030-says-citb/")],g:"MODEL",c:1},
+  {t:"Unpredictable physical work has about 38% automation potential against about 70% for predictable work.",s:[L("ConstructConnect","https://www.constructconnect.com/blog/construction-technology/robots-coming-construction-site/")],g:"VENDOR"}],
+ out:[["A","Design augmented. Making, electronics and food still needed by people.","Moderate"],
+      ["M","Depends on general-purpose robotics. Repair, retrofit and bespoke work likely to lag.","Low"],
+      ["N","Cooking and making remain life skills whatever happens to robotics.","Very low"]]},
+{id:"languages",name:"Languages",grp:"Foundation",ks:"KS2–3, KS4 option",press:5,
+ hl:"The clearest causal evidence of displacement, at the transactional end.",
+ ex:"Transactional translation, written homework",rs:"Live conversation, intercultural skill",
+ know:[
+  {t:"Compulsory at KS2 and KS3; an entitlement only at KS4.",s:[L("DfE Languages PoS","https://www.gov.uk/government/publications/national-curriculum-in-england-languages-progammes-of-study/national-curriculum-in-england-languages-progammes-of-study")]},
+  {t:"The reformed GCSE (first exams 2026) uses 1,200 (Foundation) or 1,700 (Higher) high-frequency words, and tests dictation, reading aloud, two-way translation and unprepared conversation, with no reference materials.",s:[L("GCSE MFL content","https://assets.publishing.service.gov.uk/media/67b60412ae5d020b0914bbdc/French__German__and_Spanish_GCSE_subject_content_without_Annexes_D_and_E_Feb_2025.pdf")]},
+  {t:"Uptake is flat at about 44%. French fell from 25% to 18% and German from 10% to 5%; Spanish rose from 9% to 19%. Disadvantaged pupils: 34% vs 50%.",s:[S.car]}],
+ risk:[
+  {t:"Machine translation is strong but not solved: GPT-4 matched junior translators, not senior ones, and is weaker for low-resource languages.",s:[L("WMT24","https://research.google/pubs/findings-of-the-wmt24-general-machine-translation-shared-task-the-llm-era-is-here-but-mt-is-not-solved-yet/"),L("Yan et al.","https://arxiv.org/pdf/2407.03658")],g:"EMP"},
+  {t:"AI can do almost all written homework in GCSE French, German and Spanish. The exams themselves are largely AI-resilient."},
+  {t:"School teaching reaches roughly A1–B1, exactly the level AI translation now covers. Lost motivation (\"my phone translates\") is plausible but unmeasured in England.",g:"SPEC"}],
+ opp:[
+  {t:"The government will \"explore how AI and edtech can support stronger outcomes in language education\".",s:[S.gov]},
+  {t:"An AI conversation partner limited to the GCSE word list is feasible and could address the shortage of speaking practice. Untested."},
+  {t:"Before AI, SMEs using language skills were 30% more successful at exporting.",s:[L("British Academy","https://www.thebritishacademy.ac.uk/news/british-academy-welcomes-new-research-showing-value-of-language-skills-to-smes/")],g:"ADVOCACY"}],
+ job:[
+  {t:"Google Translate's spread meant about 28,000 fewer US translator jobs over 2010–23, and lower demand for all five languages studied. Working paper.",s:[L("Frey & Llanos-Paredes","https://www.oxfordmartin.ox.ac.uk/publications/lost-in-translation-artificial-intelligence-and-the-demand-for-foreign-language-skills")],g:"EMP"},
+  {t:"36% of UK translators say they lost work to generative AI (self-selected sample).",s:[L("The Bookseller","https://thebookseller.com/news/a-third-of-translators-report-losing-work-to-generative-ai-systems-soa-survey-reveals")],g:"SURVEY"},
+  {t:"The US still projects 2% growth for interpreters and translators to 2034.",s:[L("BLS","https://www.bls.gov/ooh/media-and-communication/interpreters-and-translators.htm")],g:"MODEL"}],
+ out:[["P","Transactional translation partly replaced; relational and intercultural use augmented.","Low–moderate"],
+      ["P","Near-seamless speech translation for major languages is plausible. Professional work shrinks to high-stakes, creative and rare-language niches.","Low"],
+      ["O","The personal, cultural and trust value of speaking a language cannot be substituted, but its market value is low.","Very low"]]},
+{id:"history",name:"History",grp:"Foundation",ks:"KS1–3, KS4 option",press:3,
+ hl:"Research synthesis is exposed. Judging sources is strengthened.",
+ ex:"Research synthesis, essay drafting",rs:"Source criticism, interpretation",
+ know:[
+  {t:"Chronological knowledge plus evidence, interpretation, causation, change and significance.",s:[L("DfE History PoS","https://www.gov.uk/government/publications/national-curriculum-in-england-history-programmes-of-study")],c:1},
+  {t:"GCSE take-up is 42%. The review found the subject working well, linked source work to media literacy and named deepfakes of \"current or historical events\".",s:[S.car2]}],
+ risk:[
+  {t:"Historians' professional body warns AI \"regularly hallucinates content, references, sources, and quotations\".",s:[L("AHA","https://www.historians.org/event/guiding-principles-for-ai-in-history-education/")]},
+  {t:"Essay outsourcing threatens day-to-day learning more than GCSE grades, which stay exam-based."}],
+ opp:[
+  {t:"Machine learning recovered Greek text from a carbonised Herculaneum scroll, winning the $700,000 Vesuvius Challenge.",s:[L("Oxford Herculaneum","https://www.herculaneum.ox.ac.uk/index.php/2025/10/06/latest-news-from-the-vesuvius-challenge/")]},
+  {t:"Key finding: fact-checkers who read \"laterally\" beat PhD historians at judging websites. Six one-hour lessons improved students' judgements (271 vs 228 students).",s:[L("Stanford GSE","https://ed.stanford.edu/news/it-doesn-t-take-long-learn-how-spot-misinformation-online-stanford-study-finds")],g:"EMP"}],
+ job:[
+  {t:"Microsoft's analysis reportedly ranks historians about second for AI applicability. The authors say reading this as job loss \"would be a mistake\".",s:[L("Fortune","https://fortune.com/article/what-are-the-jobs-most-exposed-to-ai-microsoft-research/")],g:"VENDOR"}],
+ out:[["A","Source criticism becomes more valuable.","Moderate"],
+      ["A","Routine research synthesis largely automated. Human role is provenance, interpretation and accountability.","Low"],
+      ["N","Needed for civic reasoning.","Very low"]]},
+{id:"geography",name:"Geography",grp:"Foundation",ks:"KS1–3, KS4 option",press:2,
+ hl:"AI builds the maps. Fieldwork checks them against the ground.",
+ ex:"Mapping, forecasting, data processing",rs:"Fieldwork, place knowledge",
+ know:[
+  {t:"Place and locational knowledge, physical and human processes, GIS at KS3, and GCSE fieldwork in two contrasting environments.",s:[L("DfE Geography PoS","https://www.gov.uk/government/publications/national-curriculum-in-england-geography-programmes-of-study")],c:1},
+  {t:"GCSE take-up rose to 41%. The review found fieldwork \"inconsistently provided\", \"notable gaps\" on climate change, and wants spatial reasoning and digital tools made explicit at KS3.",s:[S.car2]}],
+ risk:[
+  {t:"If scarce fieldwork is swapped for AI or virtual substitutes, the skills gap the review found widens, especially for disadvantaged pupils. This is an inference, not a measured effect.",g:"SPEC"},
+  {t:"No study yet on whether AI tools weaken pupils' spatial reasoning."}],
+ opp:[
+  {t:"AI weather model GraphCast beat the leading operational forecast on 90% of 1,380 targets.",s:[L("Science 2023","https://www.science.org/doi/10.1126/science.adi2336")],g:"EMP",c:1}],
+ job:[
+  {t:"The research found no UK labour-demand data for GIS or geospatial roles."}],
+ out:[["A","The scarce skill becomes judging whether a model's output is plausible on the ground.","Moderate"],
+      ["A","Place knowledge and field judgement act as checks on automated analysis.","Low"],
+      ["N","Still needed.","Very low"]]},
+{id:"citizenship",name:"Citizenship",grp:"Foundation",ks:"KS3–4 (KS1+ from 2028)",press:1,
+ hl:"Needed more as AI erodes trust in information.",
+ ex:"(content subject)",rs:"Democratic, legal, financial and media judgement",
+ know:[
+  {t:"Democracy, law, rights and personal finance. Statutory only at KS3–4; GCSE take-up under 5%.",s:[L("DfE Citizenship PoS","https://www.gov.uk/government/publications/national-curriculum-in-england-citizenship-programmes-of-study"),S.car2]},
+  {t:"Becomes statutory from KS1, with media literacy covering messages \"including AI\", aimed at first teaching in September 2028.",s:[L("Westminster Brief","https://westminsterbrief.co.uk/archive/pq/1386")]}],
+ risk:[
+  {t:"The Alan Turing Institute found \"no conclusive evidence\" AI disinformation changed 2024 election results, but documented confusion and deepfake abuse of candidates.",s:[L("Turing evidence","https://committees.parliament.uk/writtenevidence/135409/default/")]},
+  {t:"Only 9% of UK adults and 20% of 8–15s feel confident identifying deepfakes (different surveys).",s:[L("Ofcom 2024","https://www.ofcom.org.uk/__data/assets/pdf_file/0020/283025/adults-media-use-and-attitudes-report-2024.pdf"),L("UK Safer Internet Centre","https://saferinternet.org.uk/blog/ofcom-releases-research-into-ai-generated-content")],g:"SURVEY"},
+  {t:"Nearly half of children who read AI search summaries think they are always accurate.",s:[L("Ofcom 2026","https://www.ofcom.org.uk/siteassets/resources/documents/research-and-data/media-literacy-research/children/2026-children-and-parents-report/children-and-parents-media-use-and-attitudes-report-2025-6.pdf?v=418231")],g:"SURVEY"}],
+ opp:[
+  {t:"The statutory expansion of citizenship and media literacy is the main vehicle.",s:[S.gov]},
+  {t:"Lateral reading has trial evidence behind it. No AI-specific media literacy curriculum has been evaluated in English schools."}],
+ job:[
+  {t:"A civic subject, not a productivity task. The goal is calibrating trust, not just spotting fakes."}],
+ out:[["N","Needed and expanding.","Moderate–high"],
+      ["N","Content (AI governance, synthetic media) will keep changing.","Moderate"],
+      ["N","Civic purpose persists in every scenario.","Low"]]},
+{id:"art",name:"Art & design",grp:"Foundation",ks:"KS1–3, KS4 option",press:4,
+ hl:"AI raises output but narrows originality.",
+ ex:"Commodity image production",rs:"Making, curation, critical judgement",
+ know:[
+  {t:"Drawing, painting and sculpture, sketchbooks, critical evaluation and art history.",s:[L("DfE Art PoS","https://www.gov.uk/government/publications/national-curriculum-in-england-art-and-design-programmes-of-study/national-curriculum-in-england-art-and-design-programmes-of-study")]},
+  {t:"Arts GCSE entries fell 42% between 2010 and 2023. The EBacc, a commonly cited cause, is being removed.",s:[L("Cultural Learning Alliance","https://cfey.org/reports/2024/05/cultural-learning-alliance-report-card-2024/"),L("NSEAD","https://www.nsead.org/news/newsroom/ebacc-to-be-abolished/")],g:"ADVOCACY"}],
+ risk:[
+  {t:"Image freelancers on Upwork lost 3.7% of jobs and 9.4% of earnings after AI image tools launched. Top performers were not protected.",s:[S.hui],g:"EMP"},
+  {t:"A quarter of illustrators in a Society of Authors survey reported losing work to AI.",s:[L("Design Week","https://www.designweek.co.uk/how-the-illustration-industry-is-grappling-with-ai-a-special-report/")],g:"SURVEY"},
+  {t:"Across 4 million+ artworks, AI adopters produced 25% more and got 50% more favourites, but average novelty fell.",s:[L("Zhou & Lee 2024","https://pmc.ncbi.nlm.nih.gov/articles/PMC10914360")],g:"EMP"}],
+ opp:[
+  {t:"With AI, the human bottleneck moves to ideation and filtering: art direction and curation.",s:[L("Zhou & Lee 2024","https://pmc.ncbi.nlm.nih.gov/articles/PMC10914360")]},
+  {t:"The UK's March 2026 copyright report proposed no broad exemption for AI training, so licences remain necessary.",s:[L("DSIT","https://assets.publishing.service.gov.uk/media/693c70996a12691d48491f3d/Copyright_and_artificial_intelligence_DSIT_20ptfv.pdf")]}],
+ job:[
+  {t:"Creative industries were worth £124bn, 5.2% of UK GVA, in 2023.",s:[L("DCMS","https://www.gov.uk/government/statistics/dcms-economic-estimates-gva-2023-provisional/dcms-economic-estimates-annual-gva-2023-provisional")],g:"EMP"}],
+ out:[["M","Augmented and polarised: commodity illustration partly replaced; art direction, curation and craft hold value.","Moderate"],
+      ["A","Handmade work as premium product and education.","Low"],
+      ["O","Cultural and developmental value stays; economic value uncertain.","Very low"]]},
+{id:"music",name:"Music",grp:"Foundation",ks:"KS1–3, KS4 option",press:4,
+ hl:"AI floods uploads, but live performance holds up.",
+ ex:"Library and background composition",rs:"Live performance, ensemble",
+ know:[
+  {t:"Performing, composing, listening, notation and history. The Model Music Curriculum sets at least an hour a week at KS1–2.",s:[L("DfE Music PoS","https://www.gov.uk/government/publications/national-curriculum-in-england-music-programmes-of-study/national-curriculum-in-england-music-programmes-of-study"),L("MMC","https://assets.publishing.service.gov.uk/media/6061f833d3bf7f5ce1060a90/Model_Music_Curriculum_Full.pdf")]},
+  {t:"In 2022/23, 42% of schools entered nobody for GCSE Music, though entries rose 6.1% in 2025.",s:[L("Music Teacher","https://www.musicteachermagazine.co.uk/news/article/report-finds-42-of-schools-no-longer-entering-students-for-gcse-music"),L("Classic FM","https://www.classicfm.com/music-news/gcse-music-entries-rise-two-consecutive-years/")]}],
+ risk:[
+  {t:"Deezer says AI tracks passed 50% of daily uploads by July 2026, but only 1–3% of streams.",s:[L("DJ Mag","https://djmag.com/news/ai-generated-music-surpasses-50-of-daily-uploads-deezer")],c:1},
+  {t:"A creators' body projects 24% of music creators' revenue at risk by 2028.",s:[L("CISAC","https://www.cisac.org/cisacpmp-strategy-ai-study")],g:"ADVOCACY"},
+  {t:"Composing coursework is exposed: Suno-type tools make whole songs from a prompt."}],
+ opp:[
+  {t:"Universal and Warner settled with AI music firms and moved to licensing in late 2025.",s:[L("Dubspot","https://blog.dubspot.com/suno-udio-ai-music-lawsuits-2026")]},
+  {t:"Be honest about why music matters: high-quality meta-analyses find no reliable boost to general cognition. Justify it by cultural, social and performance value.",s:[L("Sala & Gobet 2020","https://pmc.ncbi.nlm.nih.gov/articles/PMC7683441")],g:"EMP"}],
+ job:[
+  {t:"UK music reached a record £8bn GVA in 2024, helped by major tours.",s:[L("Music Week","https://www.musicweek.com/labels/read/uk-music-report-values-industry-s-economic-contribution-at-8-billion-but-growth-slows-in-2024/093024")]}],
+ out:[["M","Library and background music partly replaced; live ensemble playing and teaching needed.","Moderate"],
+      ["A","Recorded-music incomes of mid-tier creators at risk.","Low"],
+      ["N","Live, embodied music-making very unlikely to be displaced.","Very low"]]},
+{id:"pe",name:"PE",grp:"Foundation",ks:"KS1–4",press:0,
+ hl:"The subject AI cannot do for pupils.",
+ ex:"Performance analytics",rs:"Movement, swimming, fitness",
+ know:[
+  {t:"Physical competence, sustained activity, competitive sport, outdoor activities, and swimming 25 metres with safe self-rescue.",s:[L("DfE PE PoS","https://www.gov.uk/government/publications/national-curriculum-in-england-physical-education-programmes-of-study/national-curriculum-in-england-physical-education-programmes-of-study")]},
+  {t:"Only 49.1% of children meet the 60-minutes-a-day activity guideline. About 1 in 4 Year 6 pupils cannot swim 25m.",s:[L("Sport England","https://sportengland.org/news-and-inspiration/childrens-activity-levels-rising-inactivity-remains-too-high"),L("Swim England","https://www.swimming.org/charity/support-us/a-nation-swimming/")],g:"EMP"}],
+ risk:[
+  {t:"The main risk is indirect: screens and AI companions compete for activity time. No England-specific causal evidence yet."}],
+ opp:[
+  {t:"Technology-supported activity interventions generally raised activity in a review of 58 controlled studies.",s:[L("Ha et al.","https://experts.umn.edu/en/publications/a-systematic-review-of-technology-infused-physical-activity-inter-2/")],g:"EMP"},
+  {t:"Wearables and motion analysis seem to work best with teacher-led goal-setting."}],
+ job:[
+  {t:"Sports players are the least AI-exposed occupation in the DfE's analysis.",s:[S.dfe23],g:"MODEL"}],
+ out:[["N","AI only augments, through motion analysis and differentiation.","High"],
+      ["N","If AI reduces physical work, the health case for PE strengthens.","High"],
+      ["N","Needed in every scenario.","High"]]},
+{id:"re",name:"Religious education",grp:"Statutory, outside the NC",ks:"All key stages (local syllabus)",press:1,
+ hl:"AI gives religious misrepresentation and ethics a place in the syllabus.",
+ ex:"Factual summaries of belief",rs:"Ethical reasoning, religious literacy",
+ know:[
+  {t:"Set locally by Agreed Syllabus Conferences under a framework largely unchanged since 1944. GCSE RS take-up is 31%.",s:[S.car2]},
+  {t:"The review recommends moving RE into the national curriculum. The government will do so only if the sector reaches consensus.",s:[L("NATRE","https://natre.org.uk/news/the-curriculum-and-assessment-review-2025-implications-for-religious-education/"),S.gov]}],
+ risk:[
+  {t:"A 2026 benchmark of 14 models found they offered religious perspectives on existential questions 3% of the time, against 53% of people who value them.",s:[L("Deseret News","https://www.deseret.com/faith/2026/05/26/studies-find-religious-bias-in-ai-models/")],c:1},
+  {t:"Earlier studies found anti-Muslim bias in GPT-3 and Christianity \"disproportionately\" winning simulated interfaith debates.",s:[L("Nature MI","https://www.nature.com/articles/s42256-021-00359-2"),L("arXiv","https://www.arxiv.org/pdf/2407.06908")]}],
+ opp:[
+  {t:"AI ethics (bias, personhood, responsibility, the meaning of work) fits RE's philosophy and ethics strand."},
+  {t:"The bias evidence argues for teacher-led, knowledge-rich RE rather than chatbot-mediated learning about religions."}],
+ job:[
+  {t:"Questions of meaning and living together are not productivity tasks. No sign yet that the RE review group will address AI."}],
+ out:[["N","Needed, with AI as new content.","Moderate"],["N","Still needed.","Low"],["N","Still needed.","Low"]]},
+{id:"rshe",name:"RSHE",grp:"Statutory, outside the NC",ks:"All key stages",press:1,
+ hl:"The subject where AI's harms to children are already visible.",
+ ex:"(content subject)",rs:"Relationships, safeguarding, self-regulation",
+ know:[
+  {t:"Revised guidance in force from 1 September 2026 adds AI literacy, deepfakes, misogyny and incel culture, sextortion and personal safety.",s:[L("GOV.UK","https://www.gov.uk/government/publications/relationships-education-relationships-and-sex-education-rse-and-health-education"),L("PSHE Association","https://pshe-association.org.uk/news/rshe-guidance-2025-what-you-need-to-know")]}],
+ risk:[
+  {t:"The IWF found 8,029 AI-generated child sexual abuse images and videos in 2025, with realism rising.",s:[L("IWF 2025","https://www.iwf.org.uk/annual-data-insights-report-2025")],g:"EMP"},
+  {t:"13% of UK teens have had some experience of nude deepfakes: 25% of vulnerable children against 11% of others.",s:[L("Internet Matters","https://www.internetmatters.org/hub/press-release/new-report-uk-teenagers-encountered-ai-generated-nude-deepfakes/")],g:"SURVEY"},
+  {t:"64% of 9–17s use chatbots; vulnerable children are more likely to use them for companionship. The guidance may not name companion chatbots: check.",s:[L("Internet Matters","https://www.internetmatters.org/hub/research/me-myself-and-ai-chatbot-research/")],g:"SURVEY"}],
+ opp:[
+  {t:"Chatbots could offer a non-judgemental place to ask questions or rehearse hard conversations. Not evaluated."},
+  {t:"The government has committed to banning nudification apps; Ofcom is investigating an AI companion service.",s:[L("VAWG plan","https://assets.publishing.service.gov.uk/media/697c7e21aacd0dc9777b502a/31.260_VAWG_02_Action_Plan_Slip_FINAL_v3_WEB_290126.pdf"),L("Ofcom","https://www.ofcom.org.uk/online-safety/illegal-and-harmful-content/ofcom-investigates-ai-companion-chatbot-service")]}],
+ job:[
+  {t:"Social skills have the strongest evidence of rising value, though the link from school PSHE to adult skills is indirect.",s:[L("Deming 2017","https://scholar.harvard.edu/sites/scholar.harvard.edu/files/ddeming/files/deming_socialskills_qje.pdf"),L("OECD","https://www.oecd.org/en/publications/2024/04/social-and-emotional-skills-for-better-lives_7af2f463.html")],g:"EMP"}],
+ out:[["N","Needed and expanding.","High"],["N","High confidence in the need; low on what the content will be.","Moderate"],["N","Still needed.","Moderate"]]}
+];
+const ORDER=SUBJ.map(s=>s.id);
+const SKILLS=[
+ ["Literacy","High AI overlap on writing; WEF rates it stable","up","Augmented; the foundation for judging AI output","Routine writing largely automated; literacy persists","Moderate / low"],
+ ["Numeracy","Maths and economics graduates in the most exposed jobs","aug","Augmented; needed for verification","As for literacy","Moderate"],
+ ["Scientific reasoning and critical thinking","Lower AI exposure; top WEF skill","up","More valuable","Likely valuable","Moderate (mostly survey)"],
+ ["Coding","Highest AI usage; UK technical postings fell most","dn","Transformed; junior entry squeezed","Highly uncertain","Moderate that disruption is happening"],
+ ["Creativity","Forecast to grow, but AI is strong at ideation","q","Augmented; contested","Uncertain","Low"],
+ ["Languages","Translation among the most AI-applicable tasks","dn","Partly replaced (transactional use)","Uncertain","Low–moderate"],
+ ["Physical and manual","Least exposed to generative AI; WEF net decline","aug","Needed","Depends on robotics","Moderate / low"],
+ ["Interpersonal and social","Rising returns; customer-facing roles resilient","up","More valuable","Most robust bet","Moderate–high"]
+];
+const DIRI={up:["up","↑"],aug:["aug","→"],dn:["dn","↓"],q:["q","?"]};
+const TL=[
+ ["2025","pol","Curriculum and Assessment Review reports (5 Nov)","\"Evolution, not revolution\": keeps subjects, adds AI literacy to computing, media literacy to citizenship and English, no more written coursework because of AI.",S.gov],
+ ["2025","evd","Unrestricted GPT-4 cuts unaided exam scores 17%","The strongest causal learning study so far.",S.bastani],
+ ["2026","evd","Junior hiring in exposed jobs 19% below trend (US)","The one labour-market effect consistently visible in the data.",S.stanford],
+ ["2026","pol","Revised RSHE guidance in force (1 Sept)","Adds AI literacy, deepfakes and sextortion.",L("GOV.UK","https://www.gov.uk/government/publications/relationships-education-relationships-and-sex-education-rse-and-health-education")],
+ ["2027","pol","Revised curriculum due (spring); DfE AI tutoring tools due (end of year)","No draft programmes of study had been published by October 2026.",S.gov],
+ ["2028","pol","First teaching of the new curriculum (September)","Citizenship statutory from KS1.",S.gov],
+ ["2029","pol","PISA Media & AI Literacy assessment; new GCSEs from 2029–30","England benchmarked on AI literacy for the first time.",L("AILit","https://ailiteracyframework.org/")],
+ ["2035","fc","NFER: 1–3 million UK jobs in declining occupations could go","Mostly admin, secretarial, customer service and machine operation. Total employment still grows.",L("NFER","https://www.nfer.ac.uk/press-releases/up-to-three-million-uk-jobs-at-risk-over-the-next-decade-says-report/")],
+ ["2037","fc","A 2026 Reception child sits GCSEs. Experts: 10% chance of full automation of all jobs","The end of the evidence-anchored horizon.",S.grace],
+ ["2045","fc","McKinsey midpoint for automating half of today's work activities","Vendor projection; not re-checked against source.",L("MGI 2023","https://www.mckinsey.com/capabilities/mckinsey-digital/our-insights/the-economic-potential-of-generative-ai-the-next-productivity-frontier")],
+ ["2047","fc","Experts: 50% chance machines outperform humans at every task","Survey of 2,778 AI researchers. Dates moved 13 years earlier in a single year.",S.grace],
+ ["2056","sc","That child reaches mid-career","Robust bets: verification-ready literacy and numeracy, evidence evaluation, interpersonal and civic skill, physical competence, self-regulation with AI.",null],
+ ["2116","fc","Experts: 50% chance of full automation of all occupations","The 69-year gap between this and 2047 is why long-range plans should be scenarios.",S.grace]
+];
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const dots=c=>{const n=CONF[c]??1;return `<span class="dots" title="Confidence: ${esc(c)}" aria-label="Confidence: ${esc(c)}">${[0,1,2].map(i=>`<i class="${i<n?'f':''}"></i>`).join("")}</span>`};
+const srcs=a=>a?a.map(x=>` <a class="src" href="${x[1]}">${esc(x[0])}</a>`).join(" ·"):"";
+const tag=b=>(b.g?`<span class="tag ${b.g}">${b.g}</span>`:"")+(b.c?`<span class="tag CHK">CHECK</span>`:"");
+let cur="english",hz="all",sortBy="curr";
+
+function renderMatrix(){
+  const list=[...SUBJ];
+  if(sortBy==="exp") list.sort((a,b)=>b.press-a.press||ORDER.indexOf(a.id)-ORDER.indexOf(b.id));
+  $("#mxbody").innerHTML=list.map(s=>`<tr data-id="${s.id}" class="${s.id===cur?'cur':''}">
+    <td class="sub"><button type="button" aria-label="Open ${esc(s.name)} deep dive"><b>${esc(s.name)}</b><i>${esc(s.grp)} · ${esc(s.ks)}</i></button></td>
+    <td class="exp">${esc(s.ex)}</td>
+    ${s.out.map((o,i)=>`<td class="hc${hz==String(i)?' sel':''}"><div class="cell ${o[0]}"><b>${VN[o[0]]}</b>${dots(o[2])}</div></td>`).join("")}
+  </tr>`).join("");
+  const mx=$("#mx");mx.classList.toggle("focus",hz!=="all");
+  mx.querySelectorAll("th.h").forEach(th=>th.classList.toggle("sel",th.dataset.c===hz));
+  renderSummary();
+}
+function renderSummary(){
+  const box=$("#summary");
+  if(hz==="all"){box.hidden=true;return}
+  box.hidden=false;
+  const i=+hz,counts={N:0,A:0,M:0,P:0,O:0};
+  SUBJ.forEach(s=>counts[s.out[i][0]]++);
+  const yr=["~2036","~2046","~2056"][i];
+  $("#sumtext").innerHTML=`At ${yr}${i? " (scenario)":""}: `+Object.entries(counts).filter(e=>e[1]).map(([k,v])=>`<strong>${v}</strong> ${VN[k].toLowerCase()}`).join(", ")+" of 14 subjects.";
+  $("#sumbar").innerHTML=Object.entries(counts).filter(e=>e[1]).map(([k,v])=>`<div class="${k}" style="flex:0 0 ${(v/14*100).toFixed(3)}%" title="${VN[k]}: ${v}">${v}</div>`).join("");
+}
+function renderPicker(){
+  const groups=["Core","Foundation","Statutory, outside the NC"];
+  $("#picker").innerHTML=groups.map(g=>`<span class="label grp">${g==="Core"?"Core subjects":g==="Foundation"?"Foundation subjects":"Statutory, outside the national curriculum"}</span>`+
+    SUBJ.filter(s=>s.grp===g).map(s=>`<button type="button" data-id="${s.id}" aria-pressed="${s.id===cur}">${esc(s.name)}</button>`).join("")).join("");
+}
+function blk(cls,title,items){
+  return `<div class="blk"><h4><span class="k ${cls}"></span>${title}</h4><ul>${items.map(b=>`<li>${esc(b.t)}${srcs(b.s)}${tag(b)}</li>`).join("")}</ul></div>`;
+}
+function renderSubject(){
+  const s=SUBJ.find(x=>x.id===cur),i=ORDER.indexOf(cur);
+  const prev=SUBJ[(i+13)%14],next=SUBJ[(i+1)%14];
+  const yrs=["~2036","~2046","~2056"],kind=["Evidence-anchored","Scenario","Scenario"];
+  $("#sj").innerHTML=`
+   <div class="sj-top">
+     <div class="meta"><span class="chip">${esc(s.grp)}</span><span class="chip">${esc(s.ks)}</span></div>
+     <h3>${esc(s.name)}</h3>
+     <p class="hl">${esc(s.hl)}</p>
+   </div>
+   <div class="strands">
+     <div class="strand ex"><span class="label">Most exposed to AI</span><b>${esc(s.ex)}</b></div>
+     <div class="strand rs"><span class="label">Most resilient</span><b>${esc(s.rs)}</b></div>
+   </div>
+   <div class="quad">
+     ${blk("know","What pupils learn",s.know)}
+     ${blk("risk","AI risks",s.risk)}
+     ${blk("opp","AI opportunities",s.opp)}
+     ${blk("job","Jobs and wider evidence",s.job)}
+   </div>
+   <div class="blk"><h4><span class="k know"></span>Outlook: needed, augmented or replaced?</h4>
+     <div class="horiz">${s.out.map((o,j)=>`<div class="hz ${o[0]}"><div class="yr"><b class="num">${yrs[j]}</b><span class="label">${kind[j]}</span></div><div class="v">${VN[o[0]]==="Mixed"?"Augmented, part replaced":VN[o[0]]}</div><p>${esc(o[1])}</p><div class="small" style="display:flex;gap:8px;align-items:center">${dots(o[2])} ${esc(o[2])} confidence</div></div>`).join("")}</div>
+   </div>
+   <div class="sj-nav">
+     <button type="button" class="btn" data-go="${prev.id}">← ${esc(prev.name)}</button>
+     <button type="button" class="btn" data-go="${next.id}">${esc(next.name)} →</button>
+   </div>`;
+}
+function select(id,scroll){
+  if(!SUBJ.some(s=>s.id===id))return;
+  cur=id;renderPicker();renderSubject();
+  document.querySelectorAll("#mxbody tr").forEach(tr=>tr.classList.toggle("cur",tr.dataset.id===id));
+  try{history.replaceState(null,"","#"+id)}catch(e){}
+  if(scroll)$("#explorer").scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
+}
+function seg(el,attr,fn){
+  el.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
+    el.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));fn(b.dataset[attr])});
+}
+/* learning chart: scale -20..130 */
+const MIN=-20,MAX=130,R=MAX-MIN,pct=v=>((v-MIN)/R*100);
+const DATA={u:{name:"Answer-giving GPT-4",p:48,e:-17,el:"−17%"},g:{name:"Hints-only tutor",p:127,e:0,el:"no difference"}};
+function renderChart(which){
+  const keys=which==="both"?["u","g"]:[which];
+  $("#chart").innerHTML=keys.map(k=>{const d=DATA[k];
+    const bar=(v,cls,label)=>{const z=pct(0),l=v>=0?z:pct(v),w=Math.abs(pct(v)-z);
+      const lab=v>=0?`left:calc(${z+w}% + 6px)`:`left:calc(${z}% + 6px)`;
+      return `<div class="track"><div class="zero" style="left:${z}%"></div>${[0,50,100].map(t=>`<div class="grid-l" style="left:${pct(t)}%"></div>`).join("")}<div class="bar ${v<0?'neg':cls}" style="left:${l}%;width:${w}%"></div><span class="bv" style="${lab}">${label}</span></div>`};
+    return `<div class="cg"><h4>${d.name}</h4>
+      <div class="br"><span>Practice</span>${bar(d.p,"pr","+"+d.p+"%")}</div>
+      <div class="br"><span>Exam, no AI</span>${bar(d.e,"ex",d.el)}</div></div>`}).join("");
+  $("#axis").innerHTML=[-20,0,50,100].map(t=>`<span style="left:${pct(t)}%">${t>0?"+":""}${t}%</span>`).join("");
+}
+function renderSkills(){
+  $("#skillbody").innerHTML=SKILLS.map(r=>{const d=DIRI[r[2]];return `<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td><td><span class="dir ${d[0]}"><i aria-hidden="true">${d[1]}</i>${esc(r[3])}</span></td><td>${esc(r[4])}</td><td>${esc(r[5])}</td></tr>`}).join("");
+}
+function renderTL(f){
+  $("#tl").innerHTML=TL.map(t=>`<div class="tli${f!=="all"&&t[1]!==f?' dim':''}"><div class="y">${t[0]}</div><div class="rail"><span class="dot ${t[1]}"></span></div><div class="body"><b>${esc(t[2])}</b><p>${esc(t[3])}${t[4]?srcs([t[4]]):""}</p></div></div>`).join("");
+}
+
+renderPicker();renderMatrix();renderChart("both");renderSkills();renderTL("all");
+const h=(location.hash||"").slice(1);
+if(SUBJ.some(s=>s.id===h)){cur=h;renderPicker();renderMatrix()}
+renderSubject();
+$("#mxbody").addEventListener("click",e=>{const tr=e.target.closest("tr");if(tr)select(tr.dataset.id,true)});
+$("#picker").addEventListener("click",e=>{const b=e.target.closest("button[data-id]");if(b)select(b.dataset.id,false)});
+$("#sj").addEventListener("click",e=>{const b=e.target.closest("button[data-go]");if(b)select(b.dataset.go,true)});
+seg($("#hzseg"),"h",v=>{hz=v;renderMatrix()});
+seg($("#sortseg"),"s",v=>{sortBy=v;renderMatrix()});
+seg($("#tutseg"),"t",renderChart);
+seg($("#tlseg"),"k",renderTL);
+/* nav highlight */
+const links=[...document.querySelectorAll("#navlinks a")];
+if("IntersectionObserver" in window){
+  const io=new IntersectionObserver(es=>{es.forEach(en=>{if(en.isIntersecting){links.forEach(a=>a.classList.toggle("on",a.getAttribute("href")==="#"+en.target.id))}})},{rootMargin:"-40% 0px -55% 0px"});
+  ["overview","matrix","explorer","learning","jobs","skills","timeline","evidence"].forEach(id=>{const el=document.getElementById(id);if(el)io.observe(el)});
+}
+</script>
+</body>
+</html>
